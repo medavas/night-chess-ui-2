@@ -1,5 +1,5 @@
 import { HeadlessState } from './state.js';
-import { setCheck, setSelected } from './board.js';
+import { setCheck, setRoyalty, setVisibility, setSelected } from './board.js';
 import { read as fenRead } from './fen.js';
 import { DrawShape, DrawBrushes } from './draw.js';
 import * as cg from './types.js';
@@ -85,6 +85,13 @@ export interface Config {
   notation?: cg.Notation; // coord notation style
   kingRoles?: cg.Role[]; // roles to be marked with check
   pocketRoles?: cg.PocketRoles; // what pieces have slots in the pocket for each color
+  wFaction?: cg.Faction;
+  bFaction?: cg.Faction;
+  // should be an array
+  wRoyalty?: cg.Key;
+  bRoyalty?: cg.Key;
+  wVisible?: boolean;
+  bVisible?: boolean;
 }
 
 export function applyAnimation(state: HeadlessState, config: Config): void {
@@ -104,7 +111,7 @@ export function configure(state: HeadlessState, config: Config): void {
 
   // if a fen was provided, replace the pieces
   if (config.fen) {
-    const boardState = fenRead(config.fen, state.dimensions);
+    const boardState = fenRead(config.fen, state.dimensions, config.wFaction, config.bFaction);
     // prevent calling cancel() if piece drag is already started from pocket!
     const draggedPiece = state.boardState.pieces.get('a0');
     if (draggedPiece !== undefined) boardState.pieces.set('a0', draggedPiece);
@@ -118,6 +125,10 @@ export function configure(state: HeadlessState, config: Config): void {
 
   // apply config values that could be undefined yet meaningful
   if ('check' in config || 'kingRoles' in config) setCheck(state, config.check || false);
+  if ('wRoyalty' in config) setRoyalty(state, config.wRoyalty, 'white');
+  if ('bRoyalty' in config) setRoyalty(state, config.bRoyalty, 'black');
+  if ('wVisible' in config) setVisibility('white', config.wVisible);
+  if ('bVisible' in config) setVisibility('black', config.bVisible);
   if ('lastMove' in config && !config.lastMove) state.lastMove = undefined;
   // in case of ZH drop last move, there's a single square.
   // if the previous last move had two squares,

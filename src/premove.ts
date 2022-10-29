@@ -20,6 +20,12 @@ export const knight: Mobility = (x1, y1, x2, y2) => {
   return (xd === 1 && yd === 2) || (xd === 2 && yd === 1);
 };
 
+export const spectre: Mobility = (x1, y1, x2, y2) => {
+  const xd = diff(x1, x2);
+  const yd = diff(y1, y2);
+  return (xd === 2 && yd === 0) || (xd === 1 && yd === 2);
+};
+
 const bishop: Mobility = (x1, y1, x2, y2) => {
   return diff(x1, x2) === diff(y1, y2);
 };
@@ -1177,6 +1183,8 @@ function builtinMobility(
             return rook;
           case 'n-piece': // knight
             return knight;
+          case 's-piece': // spectre
+            return spectre;
           case 'b-piece': // bishop
             return bishop;
           case 'q-piece': // queen

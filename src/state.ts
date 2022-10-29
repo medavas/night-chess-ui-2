@@ -91,6 +91,10 @@ export interface HeadlessState {
   notation: cg.Notation;
   kingRoles: cg.Role[]; // roles to be marked with check
   pocketRoles?: cg.PocketRoles; // undefined for non-pocket variants. Possible pieces that a pocket can hold for each color
+  wFaction: cg.Faction;
+  bFaction: cg.Faction;
+  wRoyalty?: cg.Key;
+  bRoyalty?: cg.Key;
 }
 
 export interface State extends HeadlessState {
@@ -99,7 +103,7 @@ export interface State extends HeadlessState {
 
 export function defaults(): HeadlessState {
   return {
-    boardState: fen.read(fen.initial, { width: 8, height: 8 }),
+    boardState: fen.read(fen.initial, { width: 8, height: 8 }, 'normal', 'normal'),
     orientation: 'white',
     turnColor: 'white',
     coordinates: true,
@@ -176,5 +180,7 @@ export function defaults(): HeadlessState {
     dimensions: { width: 8, height: 8 },
     notation: cg.Notation.ALGEBRAIC,
     kingRoles: ['k-piece'],
+    wFaction: 'normal',
+    bFaction: 'normal',
   };
 }

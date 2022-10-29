@@ -3,6 +3,7 @@ export type Side = typeof sides[number];
 export type Alphabet = typeof letters[number];
 export type Letter = `${'' | '+'}${Alphabet | Uppercase<Alphabet>}`;
 export type Role = `${'' | 'p'}${Alphabet}-piece`;
+export type Faction = 'normal' | 'sigma' | 'omega' | 'lambda' | 'mu' | 'nu' | 'chi';
 export type File = typeof files[number];
 export type Rank = typeof ranks[number];
 export type Key = 'a0' | `${File}${Rank}`; // The key 'a0' is only used for rendering dragged piece. It should NOT be used in any logic-related code.
@@ -14,6 +15,7 @@ export type Pos = [number, number];
 export interface Piece {
   role: Role;
   color: Color;
+  faction?: Faction | undefined;
   promoted?: boolean;
 }
 export interface Drop {

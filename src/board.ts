@@ -49,6 +49,28 @@ export function setCheck(state: HeadlessState, color: cg.Color | boolean): void 
     }
 }
 
+// should be an array?
+export function setRoyalty(state: HeadlessState, square: cg.Key | undefined, color: string): void {
+  if (color === 'white') {
+    state.wRoyalty = square;
+  } else {
+    state.bRoyalty = square;
+  }
+}
+
+export function setVisibility(color: string, visible: boolean | undefined): void {
+  const cgPieces = document.getElementsByTagName('piece');
+
+  for (let i = 0; i < cgPieces.length; i++) {
+    if (cgPieces[i].classList.contains(color) && !visible) {
+      cgPieces[i].classList.add('invisible');
+    }
+    if (cgPieces[i].classList.contains(color) && visible) {
+      cgPieces[i].classList.remove('invisible');
+    }
+  }
+}
+
 function setPremove(state: HeadlessState, orig: cg.Orig, dest: cg.Key, meta: cg.SetPremoveMetadata): void {
   state.premovable.current = [orig, dest];
   callUserFunction(state.premovable.events.set, orig, dest, meta);
@@ -341,6 +363,7 @@ export function getSnappedKeyAtDomPos(
   const origPos = key2pos(orig);
   const validSnapPos = allPos(bd).filter(pos2 => {
     return (
+      // place spectre in here for some reason?
       queen(origPos[0], origPos[1], pos2[0], pos2[1]) ||
       knight(origPos[0], origPos[1], pos2[0], pos2[1]) ||
       // Only apply this to 9x10 board to avoid interfering with other variants beside Janggi
