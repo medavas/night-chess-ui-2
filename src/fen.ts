@@ -3,7 +3,7 @@ import * as cg from './types.js';
 
 export const initial: cg.FEN = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR';
 
-export function read(fen: cg.FEN, bd: cg.BoardDimensions, wFaction: cg.Faction, bFaction: cg.Faction): cg.BoardState {
+export function read(fen: cg.FEN, bd: cg.BoardDimensions, wFaction: cg.Faction | undefined, bFaction: cg.Faction | undefined): cg.BoardState {
   const piecesPart = fen.split(' ')[0];
   const bracketIdx = piecesPart.indexOf('[');
 
@@ -25,7 +25,7 @@ export function read(fen: cg.FEN, bd: cg.BoardDimensions, wFaction: cg.Faction, 
   };
 }
 
-function readBoard(fen: cg.FEN, wFaction: cg.Faction, bFaction: cg.Faction): cg.Pieces {
+function readBoard(fen: cg.FEN, wFaction: cg.Faction | undefined, bFaction: cg.Faction | undefined): cg.Pieces {
   if (fen === 'start') fen = initial;
 
   const pieces: cg.Pieces = new Map();

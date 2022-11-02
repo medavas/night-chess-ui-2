@@ -85,8 +85,8 @@ export interface Config {
   notation?: cg.Notation; // coord notation style
   kingRoles?: cg.Role[]; // roles to be marked with check
   pocketRoles?: cg.PocketRoles; // what pieces have slots in the pocket for each color
-  wFaction: cg.Faction;
-  bFaction: cg.Faction;
+  wFaction?: cg.Faction;
+  bFaction?: cg.Faction;
   // should be an array
   wRoyalty?: cg.Key;
   bRoyalty?: cg.Key;
