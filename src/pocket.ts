@@ -22,7 +22,7 @@ export function renderPocketsInitial(
     pocketView(state, elements.pocketBottom, 'bottom');
   }
 }
-
+// bookmark, iterate an interpolate to line 36
 function pocketView(state: HeadlessState, pocketEl: HTMLElement, position: cg.PocketPosition): void {
   if (!state.pocketRoles) return;
   const color = position === 'top' ? util.opposite(state.orientation) : state.orientation;
@@ -33,7 +33,11 @@ function pocketView(state: HeadlessState, pocketEl: HTMLElement, position: cg.Po
   pocketEl.setAttribute('style', `--pocketLength: ${pl}; --files: ${files}; --ranks: ${ranks}`);
   pocketEl.classList.add('pocket', position);
   roles.forEach(role => {
-    const pieceName = util.pieceClasses({ role: role, color: color }, state.orientation);
+    const pieceName = util.pieceClasses({
+      role: role,
+      color: color,
+      faction: color === 'white' ? state.wFaction : state.bFaction
+    }, state.orientation);
     const sq = util.createEl('square');
     const p = util.createEl('piece', pieceName);
     sq.appendChild(p);
