@@ -44,6 +44,7 @@ function pocketView(state: HeadlessState, pocketEl: HTMLElement, position: cg.Po
     sq.appendChild(p);
     p.setAttribute('data-color', color);
     p.setAttribute('data-role', role);
+    p.setAttribute('data-faction', faction);
     renderPiece(state, sq);
     pocketEl.appendChild(sq);
   });
@@ -73,8 +74,9 @@ function renderPiece(state: HeadlessState, sq: HTMLElement): void {
   const p = sq.firstChild as cg.PieceNode;
   const role = p.getAttribute('data-role') as cg.Role;
   const color = p.getAttribute('data-color') as cg.Color;
+  const faction = p.getAttribute('data-faction') as cg.Faction;
   p.setAttribute('data-nb', '' + (state.boardState.pockets![color].get(role) ?? 0));
-  const piece = { role, color };
+  const piece = { role, color, faction };
 
   const selected = state.selectable.selected;
   sq.classList.toggle('selected-square', !!selected && util.isPiece(selected) && state.selectable.fromPocket && util.samePiece(selected, piece));
