@@ -1189,7 +1189,7 @@ function builtinMobility(
             return bishop;
           case 'q-piece': // queen
             return queen;
-          case 'e-piece': // S-chess elephant
+          case 'e-piece': // exile
           case 'c-piece': // chancellor
             return chancellor;
           case 'h-piece': // S-chess hawk

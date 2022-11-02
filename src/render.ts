@@ -81,12 +81,12 @@ export function render(s: State): void {
           if (s.addPieceZIndex) el.style.zIndex = posZIndex(key2pos(k), asWhite);
         }
         // same piece: flag as same
-        if (elPieceName === pieceNameOf(pieceAtKey, s.orientation, pieceAtKey.faction) && (!fading || !el.cgFading)) {
+        if (elPieceName === pieceNameOf(pieceAtKey, s.orientation) && (!fading || !el.cgFading)) {
           samePieces.add(k);
         }
         // different piece: flag as moved unless it is a fading piece
         else {
-          if (fading && elPieceName === pieceNameOf(fading, s.orientation, pieceAtKey.faction)) {
+          if (fading && elPieceName === pieceNameOf(fading, s.orientation)) {
             el.classList.add('fading');
             el.cgFading = true;
           } else {
