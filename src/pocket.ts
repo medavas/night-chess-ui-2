@@ -27,6 +27,7 @@ function pocketView(state: HeadlessState, pocketEl: HTMLElement, position: cg.Po
   if (!state.pocketRoles) return;
   const color = position === 'top' ? util.opposite(state.orientation) : state.orientation;
   const roles = state.pocketRoles[color];
+  const faction = color === 'white' ? state.wFaction : state.bFaction
   const pl = String(roles.length);
   const files = String(state.dimensions.width);
   const ranks = String(state.dimensions.height);
@@ -36,7 +37,7 @@ function pocketView(state: HeadlessState, pocketEl: HTMLElement, position: cg.Po
     const pieceName = util.pieceClasses({
       role: role,
       color: color,
-      faction: color === 'white' ? state.wFaction : state.bFaction
+      faction: faction,
     }, state.orientation);
     const sq = util.createEl('square');
     const p = util.createEl('piece', pieceName);
