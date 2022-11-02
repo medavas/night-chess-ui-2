@@ -68,7 +68,7 @@ export function render(s: State): void {
       if (pieceAtKey) {
         // continue animation if already animating and same piece
         // (otherwise it could animate a captured piece)
-        if (anim && el.cgAnimating && elPieceName === pieceNameOf(pieceAtKey, s.orientation, pieceAtKey.faction)) {
+        if (anim && el.cgAnimating && elPieceName === pieceNameOf(pieceAtKey, s.orientation)) {
           const pos = key2pos(k);
           pos[0] += anim[2];
           pos[1] += anim[3];
@@ -130,7 +130,7 @@ export function render(s: State): void {
   for (const [k, p] of pieces) {
     anim = anims.get(k);
     if (!samePieces.has(k)) {
-      pMvdset = movedPieces.get(pieceNameOf(p, s.orientation, p.faction));
+      pMvdset = movedPieces.get(pieceNameOf(p, s.orientation));
       pMvd = pMvdset && pMvdset.pop();
       // a same piece was moved
       if (pMvd) {
@@ -153,7 +153,7 @@ export function render(s: State): void {
       // no piece in moved obj: insert the new piece
       // assumes the new piece is not being dragged
       else {
-        const pieceName = pieceNameOf(p, s.orientation, p.faction),
+        const pieceName = pieceNameOf(p, s.orientation),
           pieceNode = createEl('piece', pieceName) as cg.PieceNode,
           pos = key2pos(k);
 
