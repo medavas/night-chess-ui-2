@@ -103,7 +103,7 @@ export interface State extends HeadlessState {
 
 export function defaults(): HeadlessState {
   return {
-    boardState: fen.read(fen.initial, { width: 8, height: 8 }, 'normal', 'normal'),
+    boardState: fen.read(fen.initial, { width: 8, height: 8 }),
     orientation: 'white',
     turnColor: 'white',
     coordinates: true,

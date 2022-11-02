@@ -3,7 +3,7 @@ import * as cg from './types.js';
 
 export const initial: cg.FEN = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR';
 
-export function read(fen: cg.FEN, bd: cg.BoardDimensions, wFaction: cg.Faction | undefined, bFaction: cg.Faction | undefined): cg.BoardState {
+export function read(fen: cg.FEN, bd: cg.BoardDimensions): cg.BoardState {
   const piecesPart = fen.split(' ')[0];
   const bracketIdx = piecesPart.indexOf('[');
 
@@ -20,12 +20,12 @@ export function read(fen: cg.FEN, bd: cg.BoardDimensions, wFaction: cg.Faction |
   }
 
   return {
-    pieces: readBoard(boardPart, wFaction, bFaction),
+    pieces: readBoard(boardPart),
     pockets: readPockets(pocketPart),
   };
 }
 
-function readBoard(fen: cg.FEN, wFaction: cg.Faction | undefined, bFaction: cg.Faction | undefined): cg.Pieces {
+function readBoard(fen: cg.FEN): cg.Pieces {
   if (fen === 'start') fen = initial;
 
   const pieces: cg.Pieces = new Map();
@@ -64,7 +64,6 @@ function readBoard(fen: cg.FEN, wFaction: cg.Faction | undefined, bFaction: cg.F
           const piece = {
             role: roleOf(letter),
             color: (c === letter ? 'black' : 'white') as cg.Color,
-            faction: c === letter ? bFaction : wFaction,
           } as cg.Piece;
           if (promoted) {
             piece.role = ('p' + piece.role) as cg.Role;
