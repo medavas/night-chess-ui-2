@@ -36,7 +36,7 @@ function pocketView(state: HeadlessState, pocketEl: HTMLElement, position: cg.Po
     const pieceName = util.pieceClasses({
       role: role,
       color: color,
-      faction: color === 'white' ? state.wFaction : state.bFaction
+      faction: state.orientation === 'white' ? state.wFaction : state.bFaction
     }, state.orientation);
     const sq = util.createEl('square');
     const p = util.createEl('piece', pieceName);
