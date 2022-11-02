@@ -94,9 +94,10 @@ export function drag(s: State, e: cg.MouchEvent): void {
   const el = e.target as HTMLElement,
     role = el.getAttribute('data-role') as cg.Role,
     color = el.getAttribute('data-color') as cg.Color,
+    faction = el.getAttribute('data-faction') as cg.Faction,
     n = Number(el.getAttribute('data-nb'));
   if (n === 0) return;
-  const piece = { role, color };
+  const piece = { role, color, faction };
   const previouslySelected = s.selectable.selected;
   if (!previouslySelected && s.drawable.enabled && (s.drawable.eraseOnClick || piece.color !== s.turnColor))
     drawClear(s);
