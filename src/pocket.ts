@@ -33,7 +33,6 @@ function pocketView(state: HeadlessState, pocketEl: HTMLElement, position: cg.Po
   pocketEl.setAttribute('style', `--pocketLength: ${pl}; --files: ${files}; --ranks: ${ranks}`);
   pocketEl.classList.add('pocket', position);
   roles.forEach(role => {
-    console.log(color, 'color')
     const pieceName = util.pieceClasses({
       role: role,
       color: color,

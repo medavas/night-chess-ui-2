@@ -15,7 +15,7 @@ export type Pos = [number, number];
 export interface Piece {
   role: Role;
   color: Color;
-  faction?: Faction | undefined;
+  faction?: Faction;
   promoted?: boolean;
 }
 export interface Drop {
