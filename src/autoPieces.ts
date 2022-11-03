@@ -38,8 +38,9 @@ function renderShape(state: State, { shape, hash }: SyncableShape, bounds: Clien
   if (shape.piece) {
     const orig = shape.orig;
     const scale = shape.piece.scale;
+    const faction = shape.piece?.faction;
 
-    const pieceEl = createEl('piece', pieceNameOf(shape.piece, state.orientation)) as cg.PieceNode;
+    const pieceEl = createEl(`piece ${faction}`, pieceNameOf(shape.piece, state.orientation)) as cg.PieceNode;
     pieceEl.setAttribute('cgHash', hash);
     pieceEl.cgKey = orig;
     pieceEl.cgScale = scale;
