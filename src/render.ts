@@ -232,8 +232,19 @@ function computeSquareClasses(s: State): SquareClasses {
       if (isKey(k) && k !== 'a0') addSquare(squares, k, 'last-move');
     }
   if (s.check && s.highlight.check) addSquare(squares, s.check, 'check');
-  if (s.wRoyalty) addSquare(squares, s.wRoyalty, 'royalty');
-  if (s.bRoyalty) addSquare(squares, s.bRoyalty, 'royalty');
+  if (s.royalties) {
+    for (const outerKey in s.royalties) {
+      const obj = s.royalties[outerKey];
+      for (const key in obj) {
+        const value = obj[key];
+        if (value && value > 0) {
+          addSquare(squares, key as cg.Key, outerKey);
+        } else {
+          removeSquare(squares, key as cg.Key, outerKey);
+        }
+      }
+    }
+  }
   const selected = s.selectable.selected;
   if (selected) {
     if (isKey(selected)) addSquare(squares, selected, 'selected');
@@ -259,10 +270,21 @@ function computeSquareClasses(s: State): SquareClasses {
   return squares;
 }
 
-function addSquare(squares: SquareClasses, key: cg.Key, klass: string): void {
+export function addSquare(squares: SquareClasses, key: cg.Key, klass: string): void {
   const classes = squares.get(key);
   if (classes) squares.set(key, `${classes} ${klass}`);
   else squares.set(key, klass);
+}
+
+export function removeSquare(squares: SquareClasses, key: cg.Key, klass: string): void {
+  const classes = squares.get(key);
+  if (classes) {
+    const updatedClasses = classes
+      .split(' ')
+      .filter(c => c !== klass)
+      .join(' ');
+    squares.set(key, updatedClasses);
+  }
 }
 
 function appendValue<K, V>(map: Map<K, V[]>, key: K, value: V): void {

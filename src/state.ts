@@ -25,6 +25,7 @@ export interface HeadlessState {
   highlight: {
     lastMove: boolean; // add last-move class to squares
     check: boolean; // add check class to squares
+    royalties?: boolean; // add royalty class to squares
   };
   animation: {
     enabled: boolean;
@@ -93,8 +94,7 @@ export interface HeadlessState {
   pocketRoles?: cg.PocketRoles; // undefined for non-pocket variants. Possible pieces that a pocket can hold for each color
   wFaction: cg.Faction;
   bFaction: cg.Faction;
-  wRoyalty?: cg.Key;
-  bRoyalty?: cg.Key;
+  royalties?: { [key: string]: { [key: string]: number } };
 }
 
 export interface State extends HeadlessState {
@@ -117,6 +117,7 @@ export function defaults(): HeadlessState {
     highlight: {
       lastMove: true,
       check: true,
+      royalties: true,
     },
     animation: {
       enabled: true,
@@ -182,5 +183,12 @@ export function defaults(): HeadlessState {
     kingRoles: ['k-piece'],
     wFaction: 'normal',
     bFaction: 'normal',
+    royalties: {
+      royaltyQ: {},
+      royaltyT: {},
+      royaltyM: {},
+      royaltyV: {},
+      royaltyE: {},
+    },
   };
 }

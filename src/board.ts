@@ -12,6 +12,7 @@ import {
   isKey,
   isSame,
 } from './util.js';
+import { addSquare, removeSquare } from './render.js';
 import { queen, knight, janggiElephant } from './premove.js';
 import * as cg from './types.js';
 
@@ -49,13 +50,12 @@ export function setCheck(state: HeadlessState, color: cg.Color | boolean): void 
     }
 }
 
-// should be an array?
-export function setRoyalty(state: HeadlessState, square: cg.Key | undefined, color: string): void {
-  if (color === 'white') {
-    state.wRoyalty = square;
-  } else {
-    state.bRoyalty = square;
-  }
+interface Royalties {
+  [category: string]: { [square: string]: number };
+}
+
+export function setRoyalty(state: HeadlessState, royalties?: Royalties): void {
+  state.royalties = { ...(royalties ?? {}) };
 }
 
 export function setVisibility(color: string, visible: boolean | undefined): void {

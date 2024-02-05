@@ -21,6 +21,7 @@ export interface Config {
   highlight?: {
     lastMove?: boolean; // add last-move class to squares
     check?: boolean; // add check class to squares
+    royalties?: boolean; // add royalty class to squares
   };
   animation?: {
     enabled?: boolean;
@@ -87,9 +88,7 @@ export interface Config {
   pocketRoles?: cg.PocketRoles; // what pieces have slots in the pocket for each color
   wFaction?: cg.Faction;
   bFaction?: cg.Faction;
-  // should be an array
-  wRoyalty?: cg.Key;
-  bRoyalty?: cg.Key;
+  royalties?: { [key: string]: { [key in cg.Key]: number } };
   wVisible?: boolean;
   bVisible?: boolean;
 }
@@ -125,8 +124,7 @@ export function configure(state: HeadlessState, config: Config): void {
 
   // apply config values that could be undefined yet meaningful
   if ('check' in config || 'kingRoles' in config) setCheck(state, config.check || false);
-  if ('wRoyalty' in config) setRoyalty(state, config.wRoyalty, 'white');
-  if ('bRoyalty' in config) setRoyalty(state, config.bRoyalty, 'black');
+  if ('royalties' in config) setRoyalty(state, config.royalties || {});
   if ('wVisible' in config) setVisibility('white', config.wVisible);
   if ('bVisible' in config) setVisibility('black', config.bVisible);
   if ('lastMove' in config && !config.lastMove) state.lastMove = undefined;
