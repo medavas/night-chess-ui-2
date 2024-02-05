@@ -12,7 +12,6 @@ import {
   isKey,
   isSame,
 } from './util.js';
-import { addSquare, removeSquare } from './render.js';
 import { queen, knight, janggiElephant } from './premove.js';
 import * as cg from './types.js';
 
