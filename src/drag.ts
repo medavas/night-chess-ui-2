@@ -63,7 +63,7 @@ export function start(s: State, e: cg.MouchEvent): void {
     // place ghost
     const ghost = s.dom.elements.ghost;
     if (ghost) {
-      ghost.className = `ghost ${piece.faction}`, util.pieceClasses(piece, s.orientation);
+      (ghost.className = `ghost ${piece.faction}`), util.pieceClasses(piece, s.orientation);
       util.translate(ghost, util.posToTranslate(bounds, s.dimensions)(util.key2pos(orig), board.whitePov(s)));
       util.setVisible(ghost, true);
     }
@@ -177,7 +177,11 @@ export function end(s: State, e: cg.MouchEvent): void {
   const target = e.target as HTMLElement;
   const onPocket = Number(target.getAttribute('data-nb') ?? -1) >= 0;
   const targetPiece = onPocket
-    ? ({ role: target.getAttribute('data-role'), color: target.getAttribute('data-color'), faction: target.getAttribute('data-faction') } as cg.Piece)
+    ? ({
+        role: target.getAttribute('data-role'),
+        color: target.getAttribute('data-color'),
+        faction: target.getAttribute('data-faction'),
+      } as cg.Piece)
     : undefined;
   if (dest && cur.started && cur.orig !== dest) {
     s.stats.ctrlKey = e.ctrlKey;

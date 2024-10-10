@@ -16,7 +16,7 @@
     "plugin:@typescript-eslint/recommended"
   ],
   "rules": {
-    "linebreak-style": ["error", "unix"],
+    "linebreak-style": ["error", "windows"],
     "no-duplicate-imports": "error",
     "eqeqeq": ["error", "smart"],
     "prefer-const": "error",

@@ -2,12 +2,12 @@ export type Color = typeof colors[number];
 export type Side = typeof sides[number];
 export type Alphabet = typeof letters[number];
 export type Letter = `${'' | '+'}${Alphabet | Uppercase<Alphabet>}`;
-export type Role = `${'' | 'p' | 'r'}${Alphabet}-piece`;
+export type Role = `${'' | 'p' | 'r' | 'o'}${Alphabet}-piece`;
 export type Faction = 'normal' | 'sigma' | 'omega' | 'lambda' | 'mu' | 'nu' | 'chi';
 export type File = typeof files[number];
 export type Rank = typeof ranks[number];
 export type Key = 'a0' | `${File}${Rank}`; // The key 'a0' is only used for rendering dragged piece. It should NOT be used in any logic-related code.
-export type DropOrig = `${Uppercase<Letter> | ''}${Uppercase<Letter>}@`;
+export type DropOrig = `${Uppercase<Letter> | '' | 'o'}${Uppercase<Letter>}@`;
 export type Orig = DropOrig | Key;
 
 export type FEN = string;

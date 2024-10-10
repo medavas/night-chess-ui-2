@@ -27,18 +27,21 @@ function pocketView(state: HeadlessState, pocketEl: HTMLElement, position: cg.Po
   if (!state.pocketRoles) return;
   const color = position === 'top' ? util.opposite(state.orientation) : state.orientation;
   const roles = state.pocketRoles[color];
-  const faction = color === 'white' ? state.wFaction : state.bFaction
+  const faction = color === 'white' ? state.wFaction : state.bFaction;
   const pl = String(roles.length);
   const files = String(state.dimensions.width);
   const ranks = String(state.dimensions.height);
   pocketEl.setAttribute('style', `--pocketLength: ${pl}; --files: ${files}; --ranks: ${ranks}`);
   pocketEl.classList.add('pocket', position);
   roles.forEach(role => {
-    const pieceName = util.pieceClasses({
-      role: role,
-      color: color,
-      faction: faction,
-    }, state.orientation);
+    const pieceName = util.pieceClasses(
+      {
+        role: role,
+        color: color,
+        faction: faction,
+      },
+      state.orientation
+    );
     const sq = util.createEl('square');
     const p = util.createEl('piece', pieceName);
     sq.appendChild(p);
@@ -61,8 +64,12 @@ export function renderPockets(state: State): void {
 function renderPocket(state: HeadlessState, pocketEl?: HTMLElement): void {
   if (pocketEl) {
     let sq = pocketEl.firstChild;
-    const color = (sq?.firstChild as HTMLElement)?.getAttribute('data-color');
-    pocketEl.classList.toggle('usable', !state.viewOnly && (state.movable.free || state.movable.color === 'both' || (!!color && state.movable.color === color)));
+    const color = (sq?.firstChild as HTMLElement).getAttribute('data-color');
+    pocketEl.classList.toggle(
+      'usable',
+      !state.viewOnly &&
+        (state.movable.free || state.movable.color === 'both' || (!!color && state.movable.color === color))
+    );
     while (sq) {
       renderPiece(state, sq as HTMLElement);
       sq = sq.nextSibling;
@@ -79,13 +86,26 @@ function renderPiece(state: HeadlessState, sq: HTMLElement): void {
   const piece = { role, color, faction };
 
   const selected = state.selectable.selected;
-  sq.classList.toggle('selected-square', !!selected && util.isPiece(selected) && state.selectable.fromPocket && util.samePiece(selected, piece));
+  sq.classList.toggle(
+    'selected-square',
+    !!selected && util.isPiece(selected) && state.selectable.fromPocket && util.samePiece(selected, piece)
+  );
 
   const premoveOrig = state.premovable.current?.[0];
-  sq.classList.toggle('premove', !!premoveOrig && util.isDropOrig(premoveOrig) && util.roleOf(premoveOrig) === role && state.turnColor !== color);
+  sq.classList.toggle(
+    'premove',
+    !!premoveOrig && util.isDropOrig(premoveOrig) && util.roleOf(premoveOrig) === role && state.turnColor !== color
+  );
 
   const lastMoveOrig = state.lastMove?.[0];
-  sq.classList.toggle('last-move', state.highlight.lastMove && !!lastMoveOrig && util.isDropOrig(lastMoveOrig) && util.roleOf(lastMoveOrig) === role && state.turnColor !== color);
+  sq.classList.toggle(
+    'last-move',
+    state.highlight.lastMove &&
+      !!lastMoveOrig &&
+      util.isDropOrig(lastMoveOrig) &&
+      util.roleOf(lastMoveOrig) === role &&
+      state.turnColor !== color
+  );
 }
 
 export function drag(s: State, e: cg.MouchEvent): void {
