@@ -227,10 +227,14 @@ function posZIndex(pos: cg.Pos, asWhite: boolean): string {
 
 function computeSquareClasses(s: State): SquareClasses {
   const squares: SquareClasses = new Map();
-  if (s.lastMove && s.highlight.lastMove)
+
+  // Highlight the squares for lastMoveHistory (including dyads)
+  if (s.lastMove && s.highlight.lastMove) {
     for (const k of s.lastMove) {
-      if (isKey(k) && k !== 'a0') addSquare(squares, k, 'last-move');
+      const key = k as unknown as cg.Key;
+      if (isKey(key) && key !== 'a0') addSquare(squares, key, 'last-move');
     }
+  }
   if (s.check && s.highlight.check) addSquare(squares, s.check, 'check');
   if (s.royalties) {
     for (const outerKey in s.royalties) {

@@ -97,11 +97,12 @@ function renderPiece(state: HeadlessState, sq: HTMLElement): void {
     !!premoveOrig && util.isDropOrig(premoveOrig) && util.roleOf(premoveOrig) === role && state.turnColor !== color
   );
 
-  const lastMoveOrig = state.lastMove?.[0];
+  // dyad behavior
+  const lastMoveOrig = state.lastMove?.[0][0] as cg.Orig;
   sq.classList.toggle(
     'last-move',
     state.highlight.lastMove &&
-      !!lastMoveOrig &&
+      // !!lastMoveOrig &&
       util.isDropOrig(lastMoveOrig) &&
       util.roleOf(lastMoveOrig) === role &&
       state.turnColor !== color

@@ -122,7 +122,7 @@ export function baseMove(state: HeadlessState, orig: cg.Key, dest: cg.Key): cg.P
     state.boardState.pieces.set(dest, origPiece);
     state.boardState.pieces.delete(orig);
   }
-  state.lastMove = [orig, dest];
+  state.lastMove = [[orig, dest]];
   state.check = undefined;
   callUserFunction(state.events.change);
   return captured || true;
@@ -142,7 +142,7 @@ export function baseNewPiece(
   callUserFunction(state.events.dropNewPiece, piece, dest);
   state.boardState.pieces.set(dest, piece);
   if (fromPocket) changeNumber(state.boardState.pockets![piece.color], piece.role, -1);
-  state.lastMove = [dropOrigOf(piece.role), dest];
+  state.lastMove = [[dropOrigOf(piece.role), dest]];
   state.check = undefined;
   callUserFunction(state.events.change);
   state.movable.dests = undefined;
