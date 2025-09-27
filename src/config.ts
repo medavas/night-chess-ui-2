@@ -128,13 +128,12 @@ export function configure(state: HeadlessState, config: Config): void {
   if ('royalties' in config) setRoyalty(state, config.royalties || {});
   if ('wVisible' in config) setVisibility('white', config.wVisible);
   if ('bVisible' in config) setVisibility('black', config.bVisible);
+
   // Hide enemy pieces on royaltyF squares if provided
-
-  console.log(config.royalties?.royaltyF, config);
-
   if (config.royalties?.royaltyF && config.turnColor) {
     setRoyaltySquaresVisibility(Object.keys(config.royalties.royaltyF), config.turnColor);
   }
+
   if ('lastMove' in config && !config.lastMove) state.lastMove = undefined;
   // in case of ZH drop last move, there's a single square.
   // if the previous last move had two squares,

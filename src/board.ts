@@ -385,7 +385,6 @@ export function getSnappedKeyAtDomPos(
 export const whitePov = (s: HeadlessState): boolean => s.orientation === 'white';
 
 export function setRoyaltySquaresVisibility(squares: string[], myColor: string): void {
-  console.log(squares);
   squares.forEach(square => {
     const selector = `piece[data-square="${square}"]`;
     const pieceEls = document.querySelectorAll(selector);
