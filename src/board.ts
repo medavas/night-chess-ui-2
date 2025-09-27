@@ -385,12 +385,29 @@ export function getSnappedKeyAtDomPos(
 export const whitePov = (s: HeadlessState): boolean => s.orientation === 'white';
 
 export function setRoyaltySquaresVisibility(squares: string[], myColor: string): void {
+  // Always show all ally pieces
+  const allPieces = document.querySelectorAll('piece');
+  allPieces.forEach(pieceEl => {
+    if ((pieceEl as HTMLElement).getAttribute('data-color') === myColor) {
+      pieceEl.classList.remove('invisible');
+    }
+  });
+
+  // If no royaltyF squares, show all pieces
+  if (squares.length === 0) {
+    allPieces.forEach(pieceEl => pieceEl.classList.remove('invisible'));
+    return;
+  }
+
+  // Hide only enemy pieces on royaltyF squares
   squares.forEach(square => {
     const selector = `piece[data-square="${square}"]`;
     const pieceEls = document.querySelectorAll(selector);
     pieceEls.forEach(pieceEl => {
       if ((pieceEl as HTMLElement).getAttribute('data-color') !== myColor) {
         pieceEl.classList.add('invisible');
+      } else {
+        pieceEl.classList.remove('invisible');
       }
     });
   });
