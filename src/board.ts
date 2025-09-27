@@ -389,7 +389,7 @@ export function setRoyaltySquaresVisibility(squares: string[], myColor: string):
     const selector = `piece[data-square="${square}"]`;
     const pieceEls = document.querySelectorAll(selector);
     pieceEls.forEach(pieceEl => {
-      if (!pieceEl.classList.contains(myColor)) {
+      if ((pieceEl as HTMLElement).getAttribute('data-color') !== myColor) {
         pieceEl.classList.add('invisible');
       }
     });
