@@ -122,9 +122,9 @@ export function configure(state: HeadlessState, config: Config): void {
     state.boardState = boardState;
     state.drawable.shapes = [];
     // Force update after fen load
-    if (config.royalties && config.turnColor) {
+    if (config.royalties?.royaltyF && config.turnColor) {
       setTimeout(() => {
-        if (config.royalties) setRoyaltySquaresVisibility(config.royalties.royaltyF);
+        if (config.royalties?.royaltyF) setRoyaltySquaresVisibility(config.royalties.royaltyF);
       }, 0);
     }
   }
@@ -136,9 +136,9 @@ export function configure(state: HeadlessState, config: Config): void {
   if ('bVisible' in config) setVisibility('black', config.bVisible);
 
   // Always force update after config changes
-  if (config.royalties && config.turnColor) {
+  if (config.royalties?.royaltyF && config.turnColor) {
     setTimeout(() => {
-      if (config.royalties) setRoyaltySquaresVisibility(config.royalties.royaltyF);
+      if (config.royalties?.royaltyF) setRoyaltySquaresVisibility(config.royalties.royaltyF);
     }, 0);
   }
 
