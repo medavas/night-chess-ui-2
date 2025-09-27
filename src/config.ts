@@ -121,6 +121,12 @@ export function configure(state: HeadlessState, config: Config): void {
     else boardState.pockets = undefined;
     state.boardState = boardState;
     state.drawable.shapes = [];
+    // Force update after fen load
+    if (config.royalties && config.turnColor) {
+      setTimeout(() => {
+        if (config.royalties) setRoyaltySquaresVisibility(config.royalties.royaltyF);
+      }, 0);
+    }
   }
 
   // apply config values that could be undefined yet meaningful
@@ -129,9 +135,11 @@ export function configure(state: HeadlessState, config: Config): void {
   if ('wVisible' in config) setVisibility('white', config.wVisible);
   if ('bVisible' in config) setVisibility('black', config.bVisible);
 
-  // Hide enemy pieces on royaltyF squares if provided
-  if (config.royalties?.royaltyF && config.turnColor) {
-    setRoyaltySquaresVisibility(config.royalties.royaltyF, config.turnColor);
+  // Always force update after config changes
+  if (config.royalties && config.turnColor) {
+    setTimeout(() => {
+      if (config.royalties) setRoyaltySquaresVisibility(config.royalties.royaltyF);
+    }, 0);
   }
 
   if ('lastMove' in config && !config.lastMove) state.lastMove = undefined;

@@ -384,21 +384,17 @@ export function getSnappedKeyAtDomPos(
 
 export const whitePov = (s: HeadlessState): boolean => s.orientation === 'white';
 
-export function setRoyaltySquaresVisibility(royaltyFMap: { [square: string]: number }, myColor: string): void {
-  // Always show all pieces first
+export function setRoyaltySquaresVisibility(royaltyFMap: { [square: string]: number }): void {
   const allPieces = document.querySelectorAll('piece');
   allPieces.forEach(pieceEl => pieceEl.classList.remove('invisible'));
 
-  // If all values are 0, show all pieces
   if (Object.values(royaltyFMap).every(v => v <= 0)) return;
 
-  // Hide only enemy pieces on royaltyF squares with value > 0
   Object.entries(royaltyFMap).forEach(([square, value]) => {
     if (value > 0) {
       const selector = `piece[data-square="${square}"]`;
-      const pieceEls = document.querySelectorAll(selector);
-      pieceEls.forEach(pieceEl => {
-        if ((pieceEl as HTMLElement).getAttribute('data-color') !== myColor) {
+      document.querySelectorAll(selector).forEach(pieceEl => {
+        if (!pieceEl.classList.contains('ally')) {
           pieceEl.classList.add('invisible');
         }
       });
