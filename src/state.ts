@@ -190,6 +190,7 @@ export function defaults(): HeadlessState {
       royaltyM: {},
       royaltyV: {},
       royaltyE: {},
+      royaltyF: {},
     },
   };
 }

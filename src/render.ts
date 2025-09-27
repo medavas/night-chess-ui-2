@@ -149,6 +149,12 @@ export function render(s: State): void {
           pos[1] += anim[3];
         }
         translate(pMvd, posToTranslate(pos, asWhite));
+
+        Array.from(pMvd.classList).forEach(cls => {
+          if (cls.startsWith('square-')) pMvd?.classList.remove(cls);
+        });
+        pMvd.classList.add(`square-${k}`);
+        pMvd.setAttribute('data-square', k);
       }
       // no piece in moved obj: insert the new piece
       // assumes the new piece is not being dragged
@@ -167,6 +173,9 @@ export function render(s: State): void {
         translate(pieceNode, posToTranslate(pos, asWhite));
 
         if (s.addPieceZIndex) pieceNode.style.zIndex = posZIndex(pos, asWhite);
+
+        pieceNode.classList.add(`square-${k}`);
+        pieceNode.setAttribute('data-square', k);
 
         boardEl.appendChild(pieceNode);
       }
