@@ -384,19 +384,6 @@ export function getSnappedKeyAtDomPos(
 
 export const whitePov = (s: HeadlessState): boolean => s.orientation === 'white';
 
-const __royaltyF_lastHash = '';
-const __royaltyF_lastMap: { [square: string]: number } = {};
-
-function stableStringifyNumMap(obj: Record<string, number>): string {
-  const keys = Object.keys(obj).sort();
-  let out = '';
-  for (let i = 0; i < keys.length; i++) {
-    const k = keys[i];
-    out += k + ':' + obj[k] + ';';
-  }
-  return out;
-}
-
 export function setRoyaltySquaresVisibility(royaltyFMap: { [square: string]: number }): void {
   // Only update pieces whose visibility needs to change
   // 1. Hide enemy pieces on fog squares with value > 0
