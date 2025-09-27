@@ -131,7 +131,7 @@ export function configure(state: HeadlessState, config: Config): void {
 
   // Hide enemy pieces on royaltyF squares if provided
   if (config.royalties?.royaltyF && config.turnColor) {
-    setRoyaltySquaresVisibility(Object.keys(config.royalties.royaltyF), config.turnColor);
+    setRoyaltySquaresVisibility(config.royalties.royaltyF, config.turnColor);
   }
 
   if ('lastMove' in config && !config.lastMove) state.lastMove = undefined;
