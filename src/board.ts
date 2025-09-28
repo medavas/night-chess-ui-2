@@ -385,24 +385,19 @@ export function getSnappedKeyAtDomPos(
 export const whitePov = (s: HeadlessState): boolean => s.orientation === 'white';
 
 export function setRoyaltySquaresVisibility(royaltyFMap: { [square: string]: number }): void {
-  // Only update pieces whose visibility needs to change
-  // 1. Hide enemy pieces on fog squares with value > 0
-  // 2. Show enemy pieces on fog squares with value <= 0
-  // 3. Never hide ally pieces
+  const allPieces = document.querySelectorAll('piece');
+  allPieces.forEach(pieceEl => pieceEl.classList.remove('invisible'));
+
+  if (Object.values(royaltyFMap).every(v => v <= 0)) return;
 
   Object.entries(royaltyFMap).forEach(([square, value]) => {
-    const selector = `piece[data-square="${square}"]`;
-    document.querySelectorAll(selector).forEach(pieceEl => {
-      const isAlly = pieceEl.classList.contains('ally');
-      if (isAlly) {
-        pieceEl.classList.remove('invisible');
-      } else {
-        if (value > 0) {
+    if (value > 0) {
+      const selector = `piece[data-square="${square}"]`;
+      document.querySelectorAll(selector).forEach(pieceEl => {
+        if (!pieceEl.classList.contains('ally')) {
           pieceEl.classList.add('invisible');
-        } else {
-          pieceEl.classList.remove('invisible');
         }
-      }
-    });
+      });
+    }
   });
 }
