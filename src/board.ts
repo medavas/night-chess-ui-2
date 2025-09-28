@@ -384,20 +384,62 @@ export function getSnappedKeyAtDomPos(
 
 export const whitePov = (s: HeadlessState): boolean => s.orientation === 'white';
 
+// Module-level cache of the last applied state
+let __lastRoyaltyFHash = '';
+let __lastRoyaltyFMap: { [square: string]: number } = {};
+
+// Stable stringify so key order doesn’t cause false diffs
+function stableStringify(obj: Record<string, number>): string {
+  const keys = Object.keys(obj).sort();
+  // Faster than JSON for this simple shape
+  let out = '';
+  for (let i = 0; i < keys.length; i++) {
+    const k = keys[i];
+    out += k + ':' + obj[k] + ';';
+  }
+  return out;
+}
+
 export function setRoyaltySquaresVisibility(royaltyFMap: { [square: string]: number }): void {
-  const allPieces = document.querySelectorAll('piece');
-  allPieces.forEach(pieceEl => pieceEl.classList.remove('invisible'));
+  // Fast referential short-circuit
+  if (royaltyFMap === (__lastRoyaltyFMap as any)) return;
 
-  if (Object.values(royaltyFMap).every(v => v <= 0)) return;
+  // Content short-circuit
+  const nextHash = stableStringify(royaltyFMap);
+  if (nextHash === __lastRoyaltyFHash) return;
 
-  Object.entries(royaltyFMap).forEach(([square, value]) => {
-    if (value > 0) {
-      const selector = `piece[data-square="${square}"]`;
-      document.querySelectorAll(selector).forEach(pieceEl => {
-        if (!pieceEl.classList.contains('ally')) {
-          pieceEl.classList.add('invisible');
-        }
-      });
-    }
-  });
+  // Compute which squares changed (value diff)
+  const changedSquares: string[] = [];
+  const seen = new Set<string>();
+
+  for (const [square, nextVal] of Object.entries(royaltyFMap)) {
+    seen.add(square);
+    const prevVal = __lastRoyaltyFMap[square] || 0;
+    if (prevVal !== nextVal) changedSquares.push(square);
+  }
+  // If any squares were removed from the map, their value implicitly changes from prevVal->0
+  for (const square of Object.keys(__lastRoyaltyFMap)) {
+    if (!seen.has(square)) changedSquares.push(square);
+  }
+
+  // Apply DOM updates only for changed squares
+  for (let i = 0; i < changedSquares.length; i++) {
+    const square = changedSquares[i];
+    const value = royaltyFMap[square] || 0; // removed squares act like 0
+    const selector = `piece[data-square="${square}"]`;
+    const nodes = document.querySelectorAll(selector);
+    nodes.forEach(pieceEl => {
+      const isAlly = pieceEl.classList.contains('ally');
+      if (isAlly) {
+        pieceEl.classList.remove('invisible');
+      } else {
+        if (value > 0) pieceEl.classList.add('invisible');
+        else pieceEl.classList.remove('invisible');
+      }
+    });
+  }
+
+  // Update caches
+  __lastRoyaltyFMap = royaltyFMap;
+  __lastRoyaltyFHash = nextHash;
 }
