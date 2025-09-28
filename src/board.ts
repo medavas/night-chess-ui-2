@@ -384,20 +384,46 @@ export function getSnappedKeyAtDomPos(
 
 export const whitePov = (s: HeadlessState): boolean => s.orientation === 'white';
 
+// Fog-of-war: hide enemy pieces standing on royaltyF squares (value > 0)
+// - No blanket unhide (prevents flicker).
+// - Uses a marker so we only remove invisibility we added for fog.
 export function setRoyaltySquaresVisibility(royaltyFMap: { [square: string]: number }): void {
-  const allPieces = document.querySelectorAll('piece');
-  allPieces.forEach(pieceEl => pieceEl.classList.remove('invisible'));
+  const fogSquares = new Set(
+    Object.entries(royaltyFMap)
+      .filter(([, v]) => v > 0)
+      .map(([sq]) => sq)
+  );
 
-  if (Object.values(royaltyFMap).every(v => v <= 0)) return;
+  const pieces = document.querySelectorAll<HTMLElement>('piece');
 
-  Object.entries(royaltyFMap).forEach(([square, value]) => {
-    if (value > 0) {
-      const selector = `piece[data-square="${square}"]`;
-      document.querySelectorAll(selector).forEach(pieceEl => {
-        if (!pieceEl.classList.contains('ally')) {
-          pieceEl.classList.add('invisible');
-        }
-      });
+  // If there's no fog at all, just clear our fog marks and restore visibility we set
+  if (fogSquares.size === 0) {
+    pieces.forEach(el => {
+      if (el.hasAttribute('data-fog-hidden')) {
+        el.removeAttribute('data-fog-hidden');
+        el.classList.remove('invisible'); // remove only what *we* added for fog
+      }
+    });
+    return;
+  }
+
+  pieces.forEach(el => {
+    const sq = el.getAttribute('data-square');
+    const isEnemy = !el.classList.contains('ally');
+    const shouldBeFogHidden = isEnemy && sq != null && fogSquares.has(sq);
+
+    if (shouldBeFogHidden) {
+      if (!el.hasAttribute('data-fog-hidden')) {
+        // mark and hide (add once)
+        el.setAttribute('data-fog-hidden', '1');
+        el.classList.add('invisible');
+      }
+    } else {
+      // only unhide if *we* hid it for fog
+      if (el.hasAttribute('data-fog-hidden')) {
+        el.removeAttribute('data-fog-hidden');
+        el.classList.remove('invisible');
+      }
     }
   });
 }
