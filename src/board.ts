@@ -393,10 +393,14 @@ export function setRoyaltySquaresVisibility(royaltyFMap: { [square: string]: num
     const selector = `piece[data-square="${square}"]`;
     document.querySelectorAll(selector).forEach(pieceEl => {
       const isAlly = pieceEl.classList.contains('ally');
-      const shouldBeInvisible = !isAlly && value > 0;
-      const hasInvisible = pieceEl.classList.contains('invisible');
-      if (hasInvisible !== shouldBeInvisible) {
-        pieceEl.classList.toggle('invisible', shouldBeInvisible);
+      if (isAlly) {
+        pieceEl.classList.remove('invisible');
+      } else {
+        if (value > 0) {
+          pieceEl.classList.add('invisible');
+        } else {
+          pieceEl.classList.remove('invisible');
+        }
       }
     });
   });
