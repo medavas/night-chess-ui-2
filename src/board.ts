@@ -384,43 +384,25 @@ export function getSnappedKeyAtDomPos(
 
 export const whitePov = (s: HeadlessState): boolean => s.orientation === 'white';
 
-// Keep the set of fogged squares
-let __foggedSquares = new Set<string>();
-let __raf = 0;
-let __pending: { [sq: string]: number } | null = null;
-
 export function setRoyaltySquaresVisibility(royaltyFMap: { [square: string]: number }): void {
-  if (typeof document === 'undefined') return;
-  __pending = royaltyFMap;
-  if (__raf) return;
+  // Only update pieces whose visibility needs to change
+  // 1. Hide enemy pieces on fog squares with value > 0
+  // 2. Show enemy pieces on fog squares with value <= 0
+  // 3. Never hide ally pieces
 
-  __raf = requestAnimationFrame(() => {
-    __raf = 0;
-    const map = __pending || {};
-    __pending = null;
-
-    // compute next set (value > 0)
-    const next = new Set<string>();
-    for (const [sq, v] of Object.entries(map)) if ((v | 0) > 0) next.add(sq);
-
-    // add fogged where newly fogged
-    next.forEach(sq => {
-      if (!__foggedSquares.has(sq)) {
-        document
-          .querySelectorAll(`.square[data-key="${sq}"], square[data-key="${sq}"]`)
-          .forEach(el => el.classList.add('fogged'));
+  Object.entries(royaltyFMap).forEach(([square, value]) => {
+    const selector = `piece[data-square="${square}"]`;
+    document.querySelectorAll(selector).forEach(pieceEl => {
+      const isAlly = pieceEl.classList.contains('ally');
+      if (isAlly) {
+        pieceEl.classList.remove('invisible');
+      } else {
+        if (value > 0) {
+          pieceEl.classList.add('invisible');
+        } else {
+          pieceEl.classList.remove('invisible');
+        }
       }
     });
-
-    // remove fogged where it cleared
-    __foggedSquares.forEach(sq => {
-      if (!next.has(sq)) {
-        document
-          .querySelectorAll(`.square[data-key="${sq}"], square[data-key="${sq}"]`)
-          .forEach(el => el.classList.remove('fogged'));
-      }
-    });
-
-    __foggedSquares = next;
   });
 }
