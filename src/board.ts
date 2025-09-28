@@ -384,45 +384,25 @@ export function getSnappedKeyAtDomPos(
 
 export const whitePov = (s: HeadlessState): boolean => s.orientation === 'white';
 
-let _fogRaf: number | null = null;
-let _pendingMap: { [square: string]: number } | null = null;
-
 export function setRoyaltySquaresVisibility(royaltyFMap: { [square: string]: number }): void {
-  _pendingMap = royaltyFMap;
-  if (_fogRaf != null) return;
-  _fogRaf = requestAnimationFrame(() => {
-    _fogRaf = null;
-    applyFog(_pendingMap || {});
-    _pendingMap = null;
-  });
-}
+  // Only update pieces whose visibility needs to change
+  // 1. Hide enemy pieces on fog squares with value > 0
+  // 2. Show enemy pieces on fog squares with value <= 0
+  // 3. Never hide ally pieces
 
-function applyFog(map: { [square: string]: number }) {
-  const fogSquares = new Set<string>();
-  for (const [sq, v] of Object.entries(map)) if (v > 0) fogSquares.add(sq);
-
-  // No fog: only clear what we set previously
-  if (fogSquares.size === 0) {
-    document.querySelectorAll<HTMLElement>('piece[data-fog-hidden="1"]').forEach(el => {
-      el.removeAttribute('data-fog-hidden');
-      el.style.visibility = ''; // clear our inline override
+  Object.entries(royaltyFMap).forEach(([square, value]) => {
+    const selector = `piece[data-square="${square}"]`;
+    document.querySelectorAll(selector).forEach(pieceEl => {
+      const isAlly = pieceEl.classList.contains('ally');
+      if (isAlly) {
+        pieceEl.classList.remove('invisible');
+      } else {
+        if (value > 0) {
+          pieceEl.classList.add('invisible');
+        } else {
+          pieceEl.classList.remove('invisible');
+        }
+      }
     });
-    return;
-  }
-
-  // Hide enemies on fog squares
-  document.querySelectorAll<HTMLElement>('piece:not(.ally)').forEach(el => {
-    const sq = el.getAttribute('data-square');
-    const shouldHide = !!sq && fogSquares.has(sq);
-    const isHidden = el.getAttribute('data-fog-hidden') === '1';
-
-    if (shouldHide && !isHidden) {
-      el.setAttribute('data-fog-hidden', '1');
-      // inline as backup in case any class-based animation toggles visibility
-      el.style.visibility = 'hidden';
-    } else if (!shouldHide && isHidden) {
-      el.removeAttribute('data-fog-hidden');
-      el.style.visibility = '';
-    }
   });
 }
