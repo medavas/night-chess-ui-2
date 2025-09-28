@@ -1,5 +1,5 @@
 import { HeadlessState } from './state.js';
-import { setCheck, setRoyalty, setVisibility, setSelected, setRoyaltySquaresVisibility } from './board.js';
+import { setCheck, setRoyalty, setVisibility, setSelected } from './board.js';
 import { read as fenRead } from './fen.js';
 import { DrawShape, DrawBrushes } from './draw.js';
 import * as cg from './types.js';
@@ -122,9 +122,9 @@ export function configure(state: HeadlessState, config: Config): void {
     state.boardState = boardState;
     state.drawable.shapes = [];
     // Force update after fen load
-    if (config.royalties?.royaltyF && config.turnColor) {
-      setRoyaltySquaresVisibility(config.royalties.royaltyF);
-    }
+    // if (config.royalties?.royaltyF && config.turnColor) {
+    //   setRoyaltySquaresVisibility(config.royalties.royaltyF);
+    // }
   }
 
   // apply config values that could be undefined yet meaningful
@@ -132,12 +132,6 @@ export function configure(state: HeadlessState, config: Config): void {
   if ('royalties' in config) setRoyalty(state, config.royalties || {});
   if ('wVisible' in config) setVisibility('white', config.wVisible);
   if ('bVisible' in config) setVisibility('black', config.bVisible);
-
-  // Always force update after config changes
-  if (config.royalties?.royaltyF && config.turnColor) {
-    setRoyaltySquaresVisibility(config.royalties.royaltyF);
-  }
-
   if ('lastMove' in config && !config.lastMove) state.lastMove = undefined;
   // in case of ZH drop last move, there's a single square.
   // if the previous last move had two squares,
