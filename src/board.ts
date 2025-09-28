@@ -384,46 +384,63 @@ export function getSnappedKeyAtDomPos(
 
 export const whitePov = (s: HeadlessState): boolean => s.orientation === 'white';
 
-// Fog-of-war: hide enemy pieces standing on royaltyF squares (value > 0)
-// - No blanket unhide (prevents flicker).
-// - Uses a marker so we only remove invisibility we added for fog.
+// headless/ui helpers for fog-hiding enemies on royaltyF squares without flicker
+
+let _fogRaf: number | null = null;
+let _pendingRoyaltyF: { [square: string]: number } | null = null;
+
+/**
+ * Fog-of-war: hide enemy pieces on royaltyF squares (value > 0).
+ * - Uses a dedicated attribute (data-fog-hidden) instead of a shared class.
+ * - Batches DOM writes via requestAnimationFrame to avoid flash during layout/drag.
+ * - Touches only what needs changing each frame.
+ */
 export function setRoyaltySquaresVisibility(royaltyFMap: { [square: string]: number }): void {
-  const fogSquares = new Set(
-    Object.entries(royaltyFMap)
-      .filter(([, v]) => v > 0)
-      .map(([sq]) => sq)
-  );
+  _pendingRoyaltyF = royaltyFMap;
+  if (_fogRaf != null) return;
+  _fogRaf = requestAnimationFrame(applyFogOnce);
+}
 
-  const pieces = document.querySelectorAll<HTMLElement>('piece');
+function applyFogOnce() {
+  _fogRaf = null;
+  const map = _pendingRoyaltyF || {};
+  _pendingRoyaltyF = null;
 
-  // If there's no fog at all, just clear our fog marks and restore visibility we set
+  // Build the set of fog squares
+  const fogSquares = new Set<string>();
+  for (const [sq, val] of Object.entries(map)) {
+    if (val > 0) fogSquares.add(sq);
+  }
+
+  // If no fog, clear our attribute from any pieces we previously hid
   if (fogSquares.size === 0) {
-    pieces.forEach(el => {
-      if (el.hasAttribute('data-fog-hidden')) {
-        el.removeAttribute('data-fog-hidden');
-        el.classList.remove('invisible'); // remove only what *we* added for fog
-      }
+    document.querySelectorAll<HTMLElement>('piece[data-fog-hidden="1"]').forEach(el => {
+      el.removeAttribute('data-fog-hidden');
     });
     return;
   }
 
-  pieces.forEach(el => {
-    const sq = el.getAttribute('data-square');
-    const isEnemy = !el.classList.contains('ally');
-    const shouldBeFogHidden = isEnemy && sq != null && fogSquares.has(sq);
+  // Only evaluate enemy pieces; allies should never be fog-hidden
+  const enemies = document.querySelectorAll<HTMLElement>('piece:not(.ally)');
 
-    if (shouldBeFogHidden) {
-      if (!el.hasAttribute('data-fog-hidden')) {
-        // mark and hide (add once)
+  // 1) Hide enemies that *should* be fog-hidden
+  enemies.forEach(el => {
+    const sq = el.getAttribute('data-square');
+    if (sq && fogSquares.has(sq)) {
+      // Set only if not already set to avoid churn
+      if (el.getAttribute('data-fog-hidden') !== '1') {
         el.setAttribute('data-fog-hidden', '1');
-        el.classList.add('invisible');
       }
-    } else {
-      // only unhide if *we* hid it for fog
-      if (el.hasAttribute('data-fog-hidden')) {
-        el.removeAttribute('data-fog-hidden');
-        el.classList.remove('invisible');
-      }
+    }
+  });
+
+  // 2) Unhide any pieces we previously hid that are no longer on fog squares
+  //    (We scope to [data-fog-hidden] to keep this loop small.)
+  document.querySelectorAll<HTMLElement>('piece[data-fog-hidden="1"]').forEach(el => {
+    const sq = el.getAttribute('data-square');
+    // If it’s an ally now or no longer in fog, unhide
+    if (el.classList.contains('ally') || !sq || !fogSquares.has(sq)) {
+      el.removeAttribute('data-fog-hidden');
     }
   });
 }
