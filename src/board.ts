@@ -384,35 +384,13 @@ export function getSnappedKeyAtDomPos(
 
 export const whitePov = (s: HeadlessState): boolean => s.orientation === 'white';
 
-// headless/ui helpers for fog-hiding enemies on royaltyF squares without flicker
-
-let _fogRaf: number | null = null;
-let _pendingRoyaltyF: { [square: string]: number } | null = null;
-
-/**
- * Fog-of-war: hide enemy pieces on royaltyF squares (value > 0).
- * - Uses a dedicated attribute (data-fog-hidden) instead of a shared class.
- * - Batches DOM writes via requestAnimationFrame to avoid flash during layout/drag.
- * - Touches only what needs changing each frame.
- */
 export function setRoyaltySquaresVisibility(royaltyFMap: { [square: string]: number }): void {
-  _pendingRoyaltyF = royaltyFMap;
-  if (_fogRaf != null) return;
-  _fogRaf = requestAnimationFrame(applyFogOnce);
-}
+  const fogSquares = new Set(
+    Object.entries(royaltyFMap)
+      .filter(([, v]) => v > 0)
+      .map(([sq]) => sq)
+  );
 
-function applyFogOnce() {
-  _fogRaf = null;
-  const map = _pendingRoyaltyF || {};
-  _pendingRoyaltyF = null;
-
-  // Build the set of fog squares
-  const fogSquares = new Set<string>();
-  for (const [sq, val] of Object.entries(map)) {
-    if (val > 0) fogSquares.add(sq);
-  }
-
-  // If no fog, clear our attribute from any pieces we previously hid
   if (fogSquares.size === 0) {
     document.querySelectorAll<HTMLElement>('piece[data-fog-hidden="1"]').forEach(el => {
       el.removeAttribute('data-fog-hidden');
@@ -420,25 +398,17 @@ function applyFogOnce() {
     return;
   }
 
-  // Only evaluate enemy pieces; allies should never be fog-hidden
-  const enemies = document.querySelectorAll<HTMLElement>('piece:not(.ally)');
-
-  // 1) Hide enemies that *should* be fog-hidden
-  enemies.forEach(el => {
+  // Hide enemies on fog squares
+  document.querySelectorAll<HTMLElement>('piece:not(.ally)').forEach(el => {
     const sq = el.getAttribute('data-square');
     if (sq && fogSquares.has(sq)) {
-      // Set only if not already set to avoid churn
-      if (el.getAttribute('data-fog-hidden') !== '1') {
-        el.setAttribute('data-fog-hidden', '1');
-      }
+      if (el.getAttribute('data-fog-hidden') !== '1') el.setAttribute('data-fog-hidden', '1');
     }
   });
 
-  // 2) Unhide any pieces we previously hid that are no longer on fog squares
-  //    (We scope to [data-fog-hidden] to keep this loop small.)
+  // Unhide anything we previously fog-hid that no longer qualifies
   document.querySelectorAll<HTMLElement>('piece[data-fog-hidden="1"]').forEach(el => {
     const sq = el.getAttribute('data-square');
-    // If it’s an ally now or no longer in fog, unhide
     if (el.classList.contains('ally') || !sq || !fogSquares.has(sq)) {
       el.removeAttribute('data-fog-hidden');
     }
