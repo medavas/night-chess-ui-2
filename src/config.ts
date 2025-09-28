@@ -123,7 +123,9 @@ export function configure(state: HeadlessState, config: Config): void {
     state.drawable.shapes = [];
     // Force update after fen load
     if (config.royalties?.royaltyF && config.turnColor) {
+      // setTimeout(() => {
       setRoyaltySquaresVisibility(config.royalties.royaltyF);
+      // }, 0);
     }
   }
 
@@ -135,7 +137,9 @@ export function configure(state: HeadlessState, config: Config): void {
 
   // Always force update after config changes
   if (config.royalties?.royaltyF && config.turnColor) {
+    // setTimeout(() => {
     setRoyaltySquaresVisibility(config.royalties.royaltyF);
+    // }, 0);
   }
 
   if ('lastMove' in config && !config.lastMove) state.lastMove = undefined;
