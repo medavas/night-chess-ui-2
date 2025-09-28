@@ -384,39 +384,43 @@ export function getSnappedKeyAtDomPos(
 
 export const whitePov = (s: HeadlessState): boolean => s.orientation === 'white';
 
-// Keep just the set of fogged squares (value > 0)
+// Keep the set of fogged squares
 let __foggedSquares = new Set<string>();
+let __raf = 0;
+let __pending: { [sq: string]: number } | null = null;
 
 export function setRoyaltySquaresVisibility(royaltyFMap: { [square: string]: number }): void {
   if (typeof document === 'undefined') return;
+  __pending = royaltyFMap;
+  if (__raf) return;
 
-  // Compute next set of fogged squares
-  const nextFog = new Set<string>();
-  for (const [sq, v] of Object.entries(royaltyFMap)) {
-    if ((v | 0) > 0) nextFog.add(sq);
-  }
+  __raf = requestAnimationFrame(() => {
+    __raf = 0;
+    const map = __pending || {};
+    __pending = null;
 
-  // Diff -> only touch changed squares
-  // let changed = false;
+    // compute next set (value > 0)
+    const next = new Set<string>();
+    for (const [sq, v] of Object.entries(map)) if ((v | 0) > 0) next.add(sq);
 
-  // Squares newly fogged
-  nextFog.forEach(sq => {
-    if (!__foggedSquares.has(sq)) {
-      // support both <div class="square" data-key="e4"> and <square data-key="e4">
-      const nodes = document.querySelectorAll(`.square[data-key="${sq}"], square[data-key="${sq}"]`);
-      nodes.forEach(el => el.classList.add('fogged'));
-      // changed = true;
-    }
+    // add fogged where newly fogged
+    next.forEach(sq => {
+      if (!__foggedSquares.has(sq)) {
+        document
+          .querySelectorAll(`.square[data-key="${sq}"], square[data-key="${sq}"]`)
+          .forEach(el => el.classList.add('fogged'));
+      }
+    });
+
+    // remove fogged where it cleared
+    __foggedSquares.forEach(sq => {
+      if (!next.has(sq)) {
+        document
+          .querySelectorAll(`.square[data-key="${sq}"], square[data-key="${sq}"]`)
+          .forEach(el => el.classList.remove('fogged'));
+      }
+    });
+
+    __foggedSquares = next;
   });
-
-  // Squares no longer fogged
-  __foggedSquares.forEach(sq => {
-    if (!nextFog.has(sq)) {
-      const nodes = document.querySelectorAll(`.square[data-key="${sq}"], square[data-key="${sq}"]`);
-      nodes.forEach(el => el.classList.remove('fogged'));
-      // changed = true;
-    }
-  });
-
-  __foggedSquares = nextFog;
 }
