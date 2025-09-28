@@ -384,24 +384,39 @@ export function getSnappedKeyAtDomPos(
 
 export const whitePov = (s: HeadlessState): boolean => s.orientation === 'white';
 
+// Keep just the set of fogged squares (value > 0)
+let __foggedSquares = new Set<string>();
+
 export function setRoyaltySquaresVisibility(royaltyFMap: { [square: string]: number }): void {
-  // Only update pieces whose visibility needs to change
-  // 1. Hide enemy pieces on fog squares with value > 0
-  // 2. Show enemy pieces on fog squares with value <= 0
-  // 3. Never hide ally pieces
-  Object.entries(royaltyFMap).forEach(([square, value]) => {
-    const selector = `piece[data-square="${square}"]`;
-    document.querySelectorAll(selector).forEach(pieceEl => {
-      const isAlly = pieceEl.classList.contains('ally');
-      if (isAlly) {
-        pieceEl.classList.remove('invisible');
-      } else {
-        if (value > 0) {
-          pieceEl.classList.add('invisible');
-        } else {
-          pieceEl.classList.remove('invisible');
-        }
-      }
-    });
+  if (typeof document === 'undefined') return;
+
+  // Compute next set of fogged squares
+  const nextFog = new Set<string>();
+  for (const [sq, v] of Object.entries(royaltyFMap)) {
+    if ((v | 0) > 0) nextFog.add(sq);
+  }
+
+  // Diff -> only touch changed squares
+  // let changed = false;
+
+  // Squares newly fogged
+  nextFog.forEach(sq => {
+    if (!__foggedSquares.has(sq)) {
+      // support both <div class="square" data-key="e4"> and <square data-key="e4">
+      const nodes = document.querySelectorAll(`.square[data-key="${sq}"], square[data-key="${sq}"]`);
+      nodes.forEach(el => el.classList.add('fogged'));
+      // changed = true;
+    }
   });
+
+  // Squares no longer fogged
+  __foggedSquares.forEach(sq => {
+    if (!nextFog.has(sq)) {
+      const nodes = document.querySelectorAll(`.square[data-key="${sq}"], square[data-key="${sq}"]`);
+      nodes.forEach(el => el.classList.remove('fogged'));
+      // changed = true;
+    }
+  });
+
+  __foggedSquares = nextFog;
 }
