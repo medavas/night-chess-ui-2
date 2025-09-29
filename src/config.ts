@@ -122,9 +122,9 @@ export function configure(state: HeadlessState, config: Config): void {
     state.boardState = boardState;
     state.drawable.shapes = [];
     // Force update after fen load
-    // if (config.royalties?.royaltyF && config.turnColor) {
-    //   setRoyaltySquaresVisibility(config.royalties.royaltyF);
-    // }
+    if (config.royalties?.royaltyF && config.turnColor) {
+      setRoyaltySquaresVisibility(config.royalties.royaltyF);
+    }
   }
 
   // apply config values that could be undefined yet meaningful
