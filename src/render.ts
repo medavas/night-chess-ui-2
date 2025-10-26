@@ -266,7 +266,7 @@ function computeSquareClasses(s: State): SquareClasses {
       const dests = s.movable.dests?.get(originKey);
       // optional: s.movable.shiftDests is expected to be a Map<fromKey, Set<toKey>>
       const shiftDestsMap = (s.movable as any).shiftDests as Map<cg.Key, Set<cg.Key>> | undefined;
-      const shiftForOrigin = shiftDestsMap ? shiftDestsMap.get(originKey) : undefined;
+      const shiftForOrigin = shiftDestsMap && isKey(originKey) ? shiftDestsMap.get(originKey) : undefined;
       if (dests)
         for (const k of dests) {
           const isShift = !!shiftForOrigin && shiftForOrigin.has(k);
