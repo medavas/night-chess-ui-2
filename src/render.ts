@@ -265,9 +265,11 @@ function computeSquareClasses(s: State): SquareClasses {
       const dests = s.movable.dests?.get(isKey(selected) ? selected : dropOrigOf(selected.role));
       // optional: s.movable.shiftDests is expected to be a Set<cg.Key> if provided by the caller
       const shiftDests = (s.movable as any).shiftDests as Set<cg.Key> | undefined;
+      console.log(shiftDests);
       if (dests)
         for (const k of dests) {
           const isShift = !!shiftDests && shiftDests.has(k);
+          console.log(shiftDests);
           addSquare(squares, k, 'move-dest' + (isShift ? ' shift' : '') + (s.boardState.pieces.has(k) ? ' oc' : ''));
         }
       const pDests = s.premovable.dests;
